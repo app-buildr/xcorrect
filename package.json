@@ -1,0 +1,30 @@
+{
+  "name": "xcorrect",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Extension Chrome : correction orthographique des tweets avec Claude",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/app-buildr/xcorrect.git"
+  },
+  "homepage": "https://github.com/app-buildr/xcorrect#readme",
+  "bugs": {
+    "url": "https://github.com/app-buildr/xcorrect/issues"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/*.test.ts",
+    "package": "npm run build && rm -rf pack xcorrect.zip && mkdir pack && cp -R dist pack/xCorrect && (cd pack && zip -qrX ../xcorrect.zip xCorrect) && rm -rf pack"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.123.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.2.8",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}
