@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>xCorrect</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <header class="page-header">
+    <svg class="logo" viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="24" fill="var(--brand)"/>
+      <path d="M14 24.5l6.5 6.5L34 17.5" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="page-title">
+      <h1>xCorrect</h1>
+      <p>Correction orthographique de vos tweets en français, en un clic, avec Claude.</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="update-banner" id="update" role="status" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="update-body">
+        <strong>Nouvelle version de xCorrect disponible</strong>
+        <span id="updateMessage"></span>
+      </div>
+      <a id="updateLink" target="_blank" rel="noopener">Comment mettre à jour</a>
+    </div>
+
+    <h2>Réglages</h2>
+    <form class="card" id="settings">
+      <div class="field">
+        <label for="apiKey">Clé API Anthropic</label>
+        <input id="apiKey" type="password" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
+        <p class="hint">
+          À créer sur <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>.
+          Elle reste stockée dans ce navigateur uniquement.
+        </p>
+      </div>
+
+      <div class="field">
+        <label for="accountType">Type de compte X</label>
+        <select id="accountType">
+          <option value="free">Gratuit</option>
+          <option value="premium">Premium</option>
+        </select>
+        <p class="hint">Sert à calibrer la longueur des textes envoyés et à optimiser les tokens.</p>
+      </div>
+
+      <div class="actions">
+        <button id="save" type="submit">Enregistrer</button>
+        <p id="status" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+
+    <h2>Utilisation</h2>
+    <div class="card">
+      <p class="usage">Sur X, cliquez sur l'icône xCorrect sous la zone de rédaction<span id="shortcut"></span>. Le brouillon est corrigé sur place et les mots modifiés sont soulignés quelques instants.</p>
+      <p class="hint" id="shortcutHint" hidden>Aucun raccourci clavier n'est attribué : vous pouvez en choisir un dans <code>chrome://extensions/shortcuts</code>.</p>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <a href="https://github.com/app-buildr/xcorrect" target="_blank" rel="noopener">Code source sur GitHub</a>
+    <a href="https://github.com/app-buildr/xcorrect/issues" target="_blank" rel="noopener">Signaler un problème</a>
+    <span class="version" id="version"></span>
+  </footer>
+
+  <script src="options.js"></script>
+</body>
+</html>

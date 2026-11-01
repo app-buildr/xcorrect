@@ -1,0 +1,10 @@
+node_modules/
+dist/
+log/
+eval/
+.env*
+.claude/settings.local.json
+.DS_Store
+/xcorrect.zip
+scripts/
+resources/
