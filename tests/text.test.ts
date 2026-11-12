@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { cleanSpaces, normalize } from "../src/shared/text.ts";
+import { cleanSpaces, dictationSuffix, joinTranscript, normalize } from "../src/shared/text.ts";
 
 const NBSP = " ";
 
@@ -34,4 +34,30 @@ test("normalize préserve la ponctuation expressive", () => {
 
 test("normalize conserve les insécables, pour détecter une correction typographique", () => {
   assert.notEqual(normalize("fumé ?"), normalize(`fumé${NBSP}?`));
+});
+
+test("joinTranscript joint les segments de dictée par une seule espace", () => {
+  assert.equal(joinTranscript(["bonjour à tous", " ceci est un test"]), "bonjour à tous ceci est un test");
+  assert.equal(joinTranscript(["  un ", "", "   ", "deux"]), "un deux");
+  assert.equal(joinTranscript([]), "");
+});
+
+test("dictationSuffix : brouillon vide, le texte dicté seul", () => {
+  assert.equal(dictationSuffix("", "  bonjour "), "bonjour");
+});
+
+test("dictationSuffix : une espace devant, sauf si le brouillon finit par un blanc", () => {
+  assert.equal(dictationSuffix("Salut.", "ça va"), " ça va");
+  assert.equal(dictationSuffix("Salut. ", "ça va"), "ça va");
+});
+
+test("dictationSuffix : un saut de ligne tapé avant la dictée est respecté", () => {
+  // Un bloc vide en fin de brouillon se lit comme un \n final : la dictée
+  // commence la nouvelle ligne, sans espace parasite.
+  assert.equal(dictationSuffix("Ligne 1\n", "ligne 2"), "ligne 2");
+  assert.equal(dictationSuffix("Ligne 1\n\n", "ligne 3"), "ligne 3");
+});
+
+test("dictationSuffix : rien à coller si rien n'a été dicté", () => {
+  assert.equal(dictationSuffix("Brouillon", "   "), "");
 });

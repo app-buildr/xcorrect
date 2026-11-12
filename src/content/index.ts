@@ -1,12 +1,13 @@
 // Content script : point d'entrée. Assemble la détection du composeur, la
-// lecture-écriture dans Draft.js, le dialogue avec le service worker et
-// l'interface du bouton. Chacun de ces quatre volets est un module voisin.
-import { holds, readText, writeText } from "./editor.ts";
-import { findButton, findEditor, scanToolbars, watchToolbars } from "./toolbar.ts";
+// lecture-écriture dans Draft.js, le dialogue avec le service worker,
+// l'interface des boutons et la dictée. Chacun de ces volets est un module voisin.
+import { dictationAvailable, toggleDictation } from "./dictation.ts";
+import { failureNote, holds, readText, writeText } from "./editor.ts";
+import { enableDictation, findButton, findEditor, scanToolbars, watchToolbars } from "./toolbar.ts";
 import { highlightChanges } from "./highlight.ts";
 import { EDITOR_SELECTOR } from "./selectors.ts";
 import { SHORTCUT } from "../shared/messages.ts";
-import { finish, scheduleColorSync, setState, showTip } from "./ui.ts";
+import { finish, rescue, scheduleColorSync, setState, showTip } from "./ui.ts";
 import { requestCorrection } from "./worker.ts";
 import { normalize } from "../shared/text.ts";
 
@@ -16,7 +17,26 @@ async function onClick(button: HTMLButtonElement, toolbar: HTMLElement): Promise
     showTip(button, "Zone de texte introuvable", "error");
     return;
   }
+  await correctEditor(button, editor);
+}
 
+/** Correction en cours, par bouton : la dictée attend qu'elle se termine. */
+const inFlight = new WeakMap<HTMLButtonElement, Promise<void>>();
+
+/**
+ * Dictée écrite dans le brouillon : la correction part d'elle-même, sur le
+ * bouton voisin. Une correction lancée avant la fin de la dictée voit le
+ * brouillon changer et n'écrit rien : on attend son issue, puis on corrige le
+ * brouillon complet.
+ */
+async function onDictated(editor: HTMLElement): Promise<void> {
+  const button = findButton(editor);
+  if (!button) return;
+  await inFlight.get(button);
+  if (editor.isConnected) await correctEditor(button, editor);
+}
+
+async function correctEditor(button: HTMLButtonElement, editor: HTMLElement): Promise<void> {
   const original = readText(editor);
   if (!normalize(original)) {
     showTip(button, "Rien à corriger", "info");
@@ -24,14 +44,15 @@ async function onClick(button: HTMLButtonElement, toolbar: HTMLElement): Promise
   }
 
   setState(button, "loading");
-  try {
-    await correctDraft(button, editor, original);
-  } catch (err) {
+  const run = correctDraft(button, editor, original).catch((err: unknown) => {
     // Exception du DOM en cours d'écriture (éditeur remonté par X, Range
     // invalide) : le bouton ne doit jamais rester bloqué en chargement.
     console.error("[xCorrect]", err);
     finish(button, "error", "Erreur inattendue : vérifie le brouillon avant de publier.", "error");
-  }
+  });
+  inFlight.set(button, run);
+  await run;
+  if (inFlight.get(button) === run) inFlight.delete(button);
 }
 
 async function correctDraft(button: HTMLButtonElement, editor: HTMLElement, original: string): Promise<void> {
@@ -55,19 +76,7 @@ async function correctDraft(button: HTMLButtonElement, editor: HTMLElement, orig
     return setState(button, "done");
   }
 
-  const copied = await navigator.clipboard.writeText(result.text).then(
-    () => true,
-    // presse-papiers indisponible (fenêtre sans focus, permission refusée)
-    () => false,
-  );
-  const outcome =
-    written === "restored"
-      ? "brouillon d'origine conservé"
-      : "le brouillon a pu être altéré, vérifie-le avant de publier (Ctrl+Z pour annuler)";
-  const message = copied
-    ? `Remplacement impossible, ${outcome}. Texte corrigé copié dans le presse-papiers.`
-    : `Remplacement impossible, ${outcome}. Réessaie.`;
-  finish(button, "error", message, "error");
+  return rescue(button, `Remplacement impossible, ${failureNote(written)}`, result.text, "Texte corrigé");
 }
 
 // La couleur des icônes de X change avec le focus et le contenu du composeur.
@@ -76,6 +85,13 @@ for (const type of ["focusin", "focusout", "input"]) {
 }
 
 watchToolbars((button, toolbar) => void onClick(button, toolbar));
+
+// Le micro n'apparaît qu'une fois la dictée locale confirmée. La vérification
+// est asynchrone et ne retarde pas le bouton de correction.
+void dictationAvailable().then((available) => {
+  if (!available) return;
+  enableDictation((button, toolbar) => void toggleDictation(button, toolbar, (editor) => void onDictated(editor)));
+});
 
 // Raccourci clavier : corrige le composeur qui a le focus, comme un clic sur son bouton.
 chrome.runtime.onMessage.addListener((message: { type?: string } | undefined) => {

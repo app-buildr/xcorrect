@@ -83,6 +83,24 @@ Bon à savoir :
 - **Changer le raccourci clavier** : rendez-vous sur `chrome://extensions/shortcuts`. La page d'options affiche le raccourci actuellement attribué.
 - **Longueur maximale** : 1 000 caractères pour un compte gratuit, 25 000 pour un compte Premium, selon le type choisi dans les options. Le compteur de X reste la référence pour la longueur publiable.
 
+### Dicter un post
+
+Une icône de micro se trouve à côté de l'icône xCorrect, dans les navigateurs capables de reconnaître le français **sur l'appareil** (Google Chrome récent). La reconnaissance tourne localement, avec le modèle embarqué du navigateur : votre voix ne quitte pas votre ordinateur.
+
+1. **Cliquez sur le micro.** La première fois, le navigateur télécharge son modèle de dictée français : l'icône tourne, puis passe au vert. Cliquez à nouveau pour parler.
+2. **Autorisez le micro pour x.com** si le navigateur vous le demande (une seule fois). L'autorisation est accordée au site x.com lui-même, pas seulement à xCorrect : voir [Confidentialité](#confidentialité).
+3. **Parlez.** Le micro devient rouge et vos mots s'affichent au-dessus, au fil de la dictée.
+4. **Arrêtez-vous.** Après deux secondes de silence, ou dès que vous recliquez sur le micro, le texte dicté s'ajoute à la fin du brouillon et la correction démarre d'elle-même.
+
+Bon à savoir :
+
+- La reconnaissance vocale ponctue peu : la correction rétablit ce qu'elle peut, relisez avant de publier.
+- `Ctrl+Z` annule d'abord la correction, puis la dictée.
+- Sans parole pendant huit secondes, le micro se referme sans rien écrire. Une dictée s'arrête d'elle-même au bout de deux minutes.
+- Un saut de ligne tapé juste avant de dicter est respecté : la dictée commence la nouvelle ligne.
+- Si le composeur est fermé pendant la dictée, ou si le texte ne peut pas être inséré, il est copié dans le presse-papiers.
+- Si l'icône du micro n'apparaît pas, votre navigateur ne sait pas reconnaître le français localement (c'est le cas de Brave). xCorrect ne se rabat jamais sur un service de reconnaissance en ligne.
+
 ## Mise à jour
 
 Une extension installée en mode développeur n'est pas mise à jour automatiquement par Chrome. xCorrect vérifie donc lui-même, plusieurs fois par jour, si une nouvelle version est publiée. Quand c'est le cas, un **« ! » rouge** apparaît sur son icône et un **bandeau orange** en haut de la page d'options renvoie vers cette section.
@@ -120,7 +138,8 @@ Pas besoin de tout réinstaller : remplacez le dossier, puis rechargez l'extensi
 ## Ce que l'extension ne fait pas
 
 - Elle ne publie jamais rien à votre place. Le bouton Poster reste sous votre contrôle.
-- Elle n'envoie le texte à l'API Anthropic qu'au moment où vous cliquez sur l'icône ou pressez le raccourci. Aucun texte n'est lu ni transmis autrement.
+- Elle n'envoie le texte à l'API Anthropic qu'au moment où vous cliquez sur l'icône ou pressez le raccourci, ou à la fin d'une dictée. Aucun texte n'est lu ni transmis autrement.
+- Elle n'écoute le micro que pendant une dictée lancée par un clic, et n'envoie jamais l'audio nulle part.
 - Elle ne corrige que le français. Un texte dans une autre langue est renvoyé sans garantie.
 - Elle ne vérifie pas la longueur du tweet. Le plafond de caractères porte sur les caractères bruts et garde volontairement de la marge, X comptant une URL pour 23 caractères et un emoji pour 2. Au-delà, la correction est refusée.
 - En cas de réponse inattendue du modèle (réponse à une question, traduction, texte vide), le brouillon est laissé intact.
@@ -134,7 +153,9 @@ La clé est fournie par chaque utilisateur, qui paie sa propre consommation.
 ## Confidentialité
 
 - La clé API est stockée dans le navigateur, via `chrome.storage.local`, et n'est lue que par le service worker de l'extension. Elle n'est jamais exposée aux pages web.
-- Le texte du brouillon est transmis à l'API Anthropic uniquement lors d'un clic sur l'icône. Il est soumis à la politique de conservation des données d'Anthropic.
+- Le texte du brouillon est transmis à l'API Anthropic uniquement lors d'un clic sur l'icône, d'un raccourci ou à la fin d'une dictée. Il est soumis à la politique de conservation des données d'Anthropic.
+- La dictée utilise la reconnaissance vocale embarquée du navigateur (Web Speech API, traitement local imposé) : l'audio reste sur l'appareil.
+- La dictée s'exécute dans la page de X : l'autorisation du micro que vous donnez est donc enregistrée pour **x.com**, comme celle des fonctions vocales du site. X peut ensuite utiliser le micro sans vous redemander (l'indicateur d'enregistrement de l'onglet reste visible). Pour la retirer : icône à gauche de l'adresse sur x.com, puis **Micro**.
 - L'extension ne collecte aucune statistique. En dehors de l'API Anthropic, elle ne contacte que l'API publique de GitHub (`api.github.com`), sans identifiant, pour connaître la dernière version publiée.
 
 ## Développement

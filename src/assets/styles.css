@@ -1,11 +1,12 @@
-/* Bouton xCorrect injecté dans la barre d'action du composeur de X */
+/* Boutons xCorrect (correction et dictée) injectés dans la barre d'action du composeur de X */
 .xcorrect-wrap {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
-.xcorrect-btn {
+.xcorrect-btn,
+.xcorrect-mic {
   all: unset;
   box-sizing: border-box;
   display: inline-flex;
@@ -20,26 +21,54 @@
 }
 
 .xcorrect-btn:hover,
-.xcorrect-btn:focus-visible {
+.xcorrect-btn:focus-visible,
+.xcorrect-mic:hover,
+.xcorrect-mic:focus-visible {
   background-color: rgba(29, 155, 240, 0.1);
 }
 
-.xcorrect-btn svg {
+.xcorrect-btn svg,
+.xcorrect-mic svg {
   width: 23px;
   height: 23px;
   display: block;
 }
 
-.xcorrect-btn[data-state="loading"] {
+.xcorrect-btn[data-state="loading"],
+.xcorrect-mic[data-state="loading"] {
   cursor: progress;
 }
 
-.xcorrect-btn[data-state="done"] {
+.xcorrect-btn[data-state="done"],
+.xcorrect-mic[data-state="done"] {
   color: rgb(0, 186, 124);
 }
 
-.xcorrect-btn[data-state="error"] {
+.xcorrect-btn[data-state="error"],
+.xcorrect-mic[data-state="error"] {
   color: rgb(244, 33, 46);
+}
+
+/* Micro ouvert : rouge, avec un halo qui respire tant que l'écoute dure */
+.xcorrect-mic[data-state="listening"] {
+  color: rgb(244, 33, 46);
+  animation: xcorrect-listen 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes xcorrect-listen {
+  from {
+    background-color: rgba(244, 33, 46, 0.06);
+  }
+  to {
+    background-color: rgba(244, 33, 46, 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xcorrect-mic[data-state="listening"] {
+    animation: none;
+    background-color: rgba(244, 33, 46, 0.12);
+  }
 }
 
 .xcorrect-spinner {

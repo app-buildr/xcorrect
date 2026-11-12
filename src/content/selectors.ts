@@ -14,5 +14,10 @@ export const NATIVE_ICON_SELECTORS = [
   "[aria-label] svg",
 ];
 
+/** Bouton de correction : sa présence signale une barre d'action déjà équipée. */
 export const BUTTON_CLASS = "xcorrect-btn";
+/** Bouton de dictée, voisin du bouton de correction dans le même conteneur. */
+export const MIC_CLASS = "xcorrect-mic";
 export const WRAP_CLASS = "xcorrect-wrap";
+/** Info-bulles, ajoutées au body : leurs mutations ne concernent pas X. */
+export const TIP_CLASS = "xcorrect-tip";
