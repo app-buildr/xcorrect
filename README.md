@@ -99,7 +99,8 @@ Bon à savoir :
 - Sans parole pendant huit secondes, le micro se referme sans rien écrire. Une dictée s'arrête d'elle-même au bout de deux minutes.
 - Un saut de ligne tapé juste avant de dicter est respecté : la dictée commence la nouvelle ligne.
 - Si le composeur est fermé pendant la dictée, ou si le texte ne peut pas être inséré, il est copié dans le presse-papiers.
-- Si l'icône du micro n'apparaît pas, votre navigateur ne sait pas reconnaître le français localement (c'est le cas de Brave). xCorrect ne se rabat jamais sur un service de reconnaissance en ligne.
+- La dictée est désactivée dans Brave, qui ne sait pas reconnaître la parole localement : le micro n'y apparaît jamais.
+- Si l'icône du micro n'apparaît pas dans un autre navigateur, il ne sait pas reconnaître le français localement. xCorrect ne se rabat jamais sur un service de reconnaissance en ligne.
 
 ## Mise à jour
 

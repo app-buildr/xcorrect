@@ -2,6 +2,7 @@
 // embarqué du navigateur (Web Speech API, processLocally) : l'audio ne quitte
 // pas la machine. Seul le texte retranscrit part ensuite à la correction, comme
 // un brouillon tapé au clavier.
+import { isBrave } from "../shared/browser.ts";
 import { joinTranscript } from "../shared/text.ts";
 import { appendText, failureNote } from "./editor.ts";
 import { findEditor } from "./toolbar.ts";
@@ -76,9 +77,11 @@ async function availability(Recognition: RecognitionClass): Promise<Availability
 /**
  * Le micro n'est proposé que si le modèle français peut tourner sur l'appareil :
  * déjà installé, ou téléchargeable au premier clic. Un navigateur sans
- * reconnaissance locale (Brave, par exemple) n'a pas de bouton.
+ * reconnaissance locale n'a pas de bouton. Brave est écarté d'office : il expose
+ * la Web Speech API sans savoir reconnaître la parole.
  */
 export async function dictationAvailable(): Promise<boolean> {
+  if (await isBrave()) return false;
   const Recognition = recognitionClass();
   return Recognition !== null && (await availability(Recognition)) !== "unavailable";
 }
