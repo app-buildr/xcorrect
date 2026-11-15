@@ -17,7 +17,7 @@
     "watch": "node build.mjs --watch",
     "typecheck": "tsc --noEmit",
     "test": "node --test tests/*.test.ts",
-    "package": "npm run build && rm -rf pack xcorrect.zip && mkdir pack && cp -R dist pack/xCorrect && (cd pack && zip -qrX ../xcorrect.zip xCorrect) && rm -rf pack"
+    "package": "node build.mjs --release && rm -rf pack xcorrect.zip && mkdir pack && cp -R dist pack/xCorrect && (cd pack && zip -qrX ../xcorrect.zip xCorrect) && rm -rf pack && node build.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.123.0"

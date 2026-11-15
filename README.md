@@ -163,7 +163,7 @@ La clé est fournie par chaque utilisateur, qui paie sa propre consommation.
 
 ```bash
 npm install
-npm run build     # produit dist/, à charger comme extension non empaquetée
+npm run build     # produit dist/ (« xCorrect (dev) »), à charger comme extension non empaquetée
 npm test
 npm run package   # produit xcorrect.zip, à joindre à une release
 ```
