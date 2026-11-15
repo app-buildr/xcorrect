@@ -12,7 +12,8 @@ declare const __FAKE_LATEST_VERSION__: string;
 
 const ALARM = "xcorrect:update-check";
 const RED = "#f4212e";
-const TITLE = "xCorrect : options";
+// Nom lu dans le manifeste : « xCorrect (dev) » dans un build de développement.
+const TITLE = `${chrome.runtime.getManifest().name} : options`;
 
 /** Hors ligne, dépôt sans release ou réponse illisible : la version déjà relevée reste. */
 async function checkLatestVersion(): Promise<void> {
